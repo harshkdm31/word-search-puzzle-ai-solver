@@ -2,7 +2,7 @@
 import pytest
 
 from src.trie_solver import solve_trie
-
+from src.trie_solver import solve_trie_optimized
 
 def test_finds_horizontal_words():
     grid = [
@@ -126,3 +126,87 @@ def test_rejects_invalid_target():
 
     with pytest.raises(ValueError):
         solve_trie(grid, ["CAT!"])
+
+def test_optimized_solver_finds_all_words():
+    grid = [
+        list("CARD"),
+        list("DOGX"),
+        list("XXXX"),
+        list("XXXX"),
+    ]
+
+    result = solve_trie_optimized(
+        grid, ["CAR", "CARD", "DOG"]
+    )
+
+    assert set(result["found_words"]) == {"CAR", "CARD", "DOG"}
+    assert result["missing_words"] == []
+
+
+def test_optimized_solver_reports_missing_words():
+    grid = [
+        list("CATX"),
+        list("XXXX"),
+        list("XXXX"),
+        list("XXXX"),
+    ]
+
+    result = solve_trie_optimized(grid, ["CAT", "DOG"])
+
+    assert result["found_words"] == ["CAT"]
+    assert result["missing_words"] == ["DOG"]
+
+
+def test_optimized_solver_preserves_coordinates():
+    grid = [
+        list("CXXX"),
+        list("XAXX"),
+        list("XXTX"),
+        list("XXXX"),
+    ]
+
+    result = solve_trie_optimized(grid, ["CAT"])
+
+    assert result["placements"]["CAT"] == [
+        (0, 0), (1, 1), (2, 2)
+    ]
+
+
+def test_optimized_solver_handles_shared_prefixes():
+    grid = [
+        list("CART"),
+        list("XXXX"),
+        list("XXXX"),
+        list("XXXX"),
+    ]
+
+    result = solve_trie_optimized(
+        grid, ["CAR", "CART", "CAT"]
+    )
+
+    assert "CAR" in result["found_words"]
+    assert "CART" in result["found_words"]
+    assert "CAT" in result["missing_words"]
+
+
+def test_optimized_solver_records_events():
+    grid = [
+        list("CATX"),
+        list("XXXX"),
+        list("XXXX"),
+        list("XXXX"),
+    ]
+
+    result = solve_trie_optimized(grid, ["CAT"])
+    event_types = {event["type"] for event in result["events"]}
+
+    assert "explore" in event_types
+    assert "word_found" in event_types
+    assert result["states_explored"] > 0
+
+
+def test_optimized_solver_rejects_invalid_grid():
+    grid = [list("CAT"), list("XX")]
+
+    with pytest.raises(ValueError):
+        solve_trie_optimized(grid, ["CAT"])
