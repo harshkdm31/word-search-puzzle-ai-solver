@@ -1,0 +1,201 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: transparent;
+        color: var(--text-color, #f8fafc);
+    }
+
+    #grid {
+        display: grid;
+        gap: 3px;
+        width: fit-content;
+        max-width: 100%;
+        margin: 0 auto;
+        user-select: none;
+        touch-action: none;
+    }
+
+    .cell {
+        width: 38px;
+        height: 38px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border: 1px solid #475569;
+        border-radius: 5px;
+        background: #111827;
+        color: #f8fafc;
+        font-size: 16px;
+        font-weight: 700;
+        cursor: crosshair;
+        box-sizing: border-box;
+    }
+
+    .cell.selected {
+        background: #7c3aed;
+        border-color: #c4b5fd;
+    }
+
+    .cell.found {
+        background: #166534;
+        border-color: #4ade80;
+    }
+
+    .cell.selected.found {
+        background: #15803d;
+    }
+
+    @media (max-width: 600px) {
+        .cell {
+            width: 30px;
+            height: 30px;
+            font-size: 13px;
+        }
+        #grid {
+            gap: 2px;
+        }
+    }
+</style>
+</head>
+<body>
+<div id="grid"></div>
+
+<script>
+    let gridData = [];
+    let selected = [];
+    let foundPaths = [];
+    let dragging = false;
+    let startCell = null;
+    let lastCell = null;
+    let lastSent = "";
+
+    function sendSelection() {
+        const payload = JSON.stringify(selected);
+        if (payload === lastSent) return;
+        lastSent = payload;
+
+        window.parent.postMessage({
+            isStreamlitMessage: true,
+            type: "streamlit:setComponentValue",
+            value: selected
+        }, "*");
+    }
+
+    function drawGrid() {
+        const root = document.getElementById("grid");
+        root.innerHTML = "";
+        root.style.gridTemplateColumns =
+            `repeat(${gridData[0].length}, 38px)`;
+
+        gridData.forEach((row, r) => {
+            row.forEach((letter, c) => {
+                const cell = document.createElement("div");
+                cell.className = "cell";
+                cell.textContent = letter;
+                cell.dataset.row = r;
+                cell.dataset.col = c;
+
+                if (selected.some(p => p[0] === r && p[1] === c)) {
+                    cell.classList.add("selected");
+                }
+
+                if (foundPaths.some(path =>
+                    path.some(p => p[0] === r && p[1] === c)
+                )) {
+                    cell.classList.add("found");
+                }
+
+                cell.addEventListener("pointerdown", event => {
+                    event.preventDefault();
+                    dragging = true;
+                    startCell = [r, c];
+                    lastCell = null;
+                    selectLine(r, c);
+                });
+
+                cell.addEventListener("pointerenter", () => {
+                    if (dragging) selectLine(r, c);
+                });
+
+                root.appendChild(cell);
+            });
+        });
+    }
+
+    function selectLine(r, c) {
+        if (!startCell) return;
+
+        const [sr, sc] = startCell;
+        const dr = r - sr;
+        const dc = c - sc;
+
+        // Only horizontal, vertical, or diagonal straight lines.
+        if (dr !== 0 && dc !== 0 && Math.abs(dr) !== Math.abs(dc)) {
+            return;
+        }
+
+        if (lastCell && lastCell[0] === r && lastCell[1] === c) {
+            return;
+        }
+
+        lastCell = [r, c];
+
+        const rowStep = Math.sign(dr);
+        const colStep = Math.sign(dc);
+        const length = Math.max(Math.abs(dr), Math.abs(dc)) + 1;
+
+        selected = Array.from({length}, (_, i) => [
+            sr + i * rowStep,
+            sc + i * colStep
+        ]);
+
+        drawGrid();
+        sendSelection();
+    }
+
+    document.addEventListener("pointerup", () => {
+        dragging = false;
+        startCell = null;
+        lastCell = null;
+    });
+
+    // Streamlit component protocol.
+    function sendReady() {
+        window.parent.postMessage({
+            isStreamlitMessage: true,
+            type: "streamlit:componentReady",
+            apiVersion: 1
+        }, "*");
+    }
+
+    window.addEventListener("message", event => {
+        const message = event.data;
+        if (!message || !message.type) return;
+
+        if (message.type === "streamlit:render") {
+            const args = message.args || {};
+            gridData = args.grid || [];
+            foundPaths = args.found_paths || [];
+
+            if (gridData.length) {
+                drawGrid();
+            }
+
+            window.parent.postMessage({
+                isStreamlitMessage: true,
+                type: "streamlit:setFrameHeight",
+                height: document.body.scrollHeight
+            }, "*");
+        }
+    });
+
+    sendReady();
+</script>
+</body>
+</html>

@@ -11,6 +11,7 @@ from src.trie_solver import solve_trie, solve_trie_optimized
 from src.evaluation import evaluate_solvers, get_evaluation_summary
 from src.animation import TracePlayer
 from streamlit_autorefresh import st_autorefresh
+from components.interactive_grid import interactive_grid
 
 st.set_page_config(
     page_title="Word Search Puzzle AI Solver",
@@ -126,6 +127,59 @@ def render_grid(grid, state=None):
     st.markdown(css + grid_html, unsafe_allow_html=True)
 
 
+def validate_selected_word(grid, selected_cells, target_words):
+    """Validate a selection of grid cells against target words."""
+    if not selected_cells:
+        return None
+
+    cells = sorted(set(
+        (int(row), int(col)) for row, col in selected_cells
+    ))
+
+    if len(cells) == 1:
+        row, col = cells[0]
+        selected_word = grid[row][col]
+    else:
+        rows = [row for row, _ in cells]
+        cols = [col for _, col in cells]
+
+        row_diff = rows[-1] - rows[0]
+        col_diff = cols[-1] - cols[0]
+
+        # A valid word must follow one straight line.
+        if row_diff != 0 and col_diff != 0:
+            if abs(row_diff) != abs(col_diff):
+                return None
+
+        step_row = 0 if row_diff == 0 else (1 if row_diff > 0 else -1)
+        step_col = 0 if col_diff == 0 else (1 if col_diff > 0 else -1)
+
+        expected_cells = [
+            (rows[0] + i * step_row, cols[0] + i * step_col)
+            for i in range(len(cells))
+        ]
+
+        if set(expected_cells) != set(cells):
+            return None
+
+        selected_word = "".join(
+            grid[row][col] for row, col in expected_cells
+        )
+
+    normalized_targets = {
+        word.upper() for word in target_words
+    }
+
+    if selected_word in normalized_targets:
+        return selected_word
+
+    reverse_word = selected_word[::-1]
+    if reverse_word in normalized_targets:
+        return reverse_word
+
+    return None
+
+
 def describe_event(event):
     """Turn a trace event into a readable explanation."""
     event_type = event.get("type", "unknown")
@@ -195,6 +249,13 @@ defaults = {
     "trace_player": None,
     "trace_solver_name": None,
     "trace_playing": False,
+    "game_started": False,
+    "game_start_time": None,
+    "elapsed_before_pause": 0.0,
+    "manual_found_words": [],
+    "manual_selection": [],
+    "manual_found_paths": {},
+    "game_completed": False,
 }
 
 for key, value in defaults.items():
@@ -214,6 +275,16 @@ if generate_button:
             st.session_state.trace_player = None
             st.session_state.trace_solver_name = None
             st.session_state.trace_playing = False
+
+            # Reset the game timer for the new puzzle
+            st.session_state.game_running = False
+            st.session_state.game_elapsed = 0.0
+            st.session_state.game_last_start = None
+
+            st.session_state.manual_found_words = []
+            st.session_state.manual_selection = []
+
+            st.session_state.manual_found_paths = {}
 
         except (ValueError, RuntimeError) as error:
             st.sidebar.error(f"Could not generate puzzle: {error}")
@@ -238,7 +309,156 @@ with left:
         f"Target words: {len(target_words)}"
     )
 
-    render_grid(grid)
+    # Display an interactive grid for manual word selection.
+    grid_dataframe = pd.DataFrame(grid)
+
+    # Interactive grid with mouse-drag selection
+    found_paths = list(
+        st.session_state.manual_found_paths.values()
+    )
+
+    selected_cells = interactive_grid(
+        grid=grid,
+        found_paths=found_paths,
+        key="manual_word_grid",
+    )
+
+    st.session_state.manual_selection = selected_cells or []
+
+    if st.button("Check Selected Word", key="check_manual_word"):
+        selected_word = validate_selected_word(
+            grid,
+            st.session_state.manual_selection,
+            target_words,
+        )
+
+        if selected_word is None:
+            st.warning("That selection is not a target word. Try again.")
+
+        elif selected_word in st.session_state.manual_found_words:
+            st.info(f"You already found {selected_word}.")
+
+        else:
+            st.session_state.manual_found_words.append(selected_word)
+
+            # Save the coordinates of the word so its highlight persists.
+            cells = st.session_state.manual_selection
+            cells = [(int(row), int(col)) for row, col in cells]
+
+            forward_word = "".join(grid[row][col] for row, col in cells)
+            if forward_word == selected_word:
+                found_path = cells
+            else:
+                found_path = list(reversed(cells))
+
+            if "manual_found_paths" not in st.session_state:
+                st.session_state.manual_found_paths = {}
+
+            st.session_state.manual_found_paths[selected_word] = found_path
+            st.success(f"🎉 Correct! You found {selected_word}.")
+
+        # Stop the timer when the player finds every target word.
+        if set(st.session_state.manual_found_words) >= set(target_words):
+            if st.session_state.game_running:
+                st.session_state.game_elapsed += (
+                    time.perf_counter()
+                    - st.session_state.game_last_start
+                )
+                st.session_state.game_running = False
+                st.session_state.game_last_start = None
+
+            st.session_state.game_completed = False
+
+    st.write(
+        f"Words found: {len(st.session_state.manual_found_words)}"
+        f" / {len(target_words)}"
+    )
+
+    remaining_words = [
+        word for word in target_words
+        if word not in st.session_state.manual_found_words
+    ]
+
+    st.write(
+        "**Remaining:** "
+        + (", ".join(remaining_words) if remaining_words else "None — puzzle complete!")
+    )
+    
+    if st.session_state.game_completed:
+        final_seconds = st.session_state.game_elapsed
+        minutes = int(final_seconds // 60)
+        seconds = int(final_seconds % 60)
+
+        st.success(
+            f"🏆 Puzzle completed! Your final time: "
+            f"{minutes:02d}:{seconds:02d}"
+        )
+
+
+    
+    # -------------------- PLAYER TIMER --------------------
+
+    st.subheader("⏱️ Your Challenge")
+
+    if "game_running" not in st.session_state:
+        st.session_state.game_running = False
+
+    if "game_elapsed" not in st.session_state:
+        st.session_state.game_elapsed = 0.0
+
+    if "game_last_start" not in st.session_state:
+        st.session_state.game_last_start = None
+
+    timer_col1, timer_col2, timer_col3 = st.columns(3)
+
+    with timer_col1:
+        if st.button("▶️ Start / Resume", key="game_start"):
+            if not st.session_state.game_running:
+                st.session_state.game_last_start = time.perf_counter()
+                st.session_state.game_running = True
+                st.rerun()
+
+    with timer_col2:
+        if st.button("⏸️ Pause", key="game_pause"):
+            if st.session_state.game_running:
+                st.session_state.game_elapsed += (
+                    time.perf_counter()
+                    - st.session_state.game_last_start
+                )
+                st.session_state.game_running = False
+                st.session_state.game_last_start = None
+                st.rerun()
+
+    with timer_col3:
+        if st.button("🔄 Reset Timer", key="game_reset"):
+            st.session_state.game_running = False
+            st.session_state.game_elapsed = 0.0
+            st.session_state.game_last_start = None
+            st.rerun()
+
+    # Refresh the app every second while the game timer is running.
+    if st.session_state.game_running:
+        st_autorefresh(
+            interval=1000,
+            limit=None,
+            key="game_timer_refresh",
+        )
+
+    current_elapsed = st.session_state.game_elapsed
+
+    if st.session_state.game_running:
+        current_elapsed += (
+            time.perf_counter() - st.session_state.game_last_start
+        )
+
+    minutes = int(current_elapsed // 60)
+    seconds = int(current_elapsed % 60)
+
+    st.metric("Elapsed Time", f"{minutes:02d}:{seconds:02d}")
+
+    if st.session_state.game_running:
+        st.caption("Timer running. Interact with the app to refresh the display.")
+
 
     st.caption(
         "Legend: 🔵 Explored · 🔴 Backtracked · "
