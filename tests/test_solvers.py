@@ -111,3 +111,50 @@ def test_rejects_invalid_target():
 
     with pytest.raises(ValueError):
         solve_dfs(grid, ["CAT!"])
+
+def test_found_word_events_match_final_results():
+    grid = [
+        list("CAT"),
+        list("DOG"),
+        list("RAT"),
+    ]
+    words = ["CAT", "DOG", "RAT", "BIRD"]
+
+    result = solve_dfs(grid, words)
+
+    event_words = [
+        event["word"]
+        for event in result["events"]
+        if event["type"] == "word_found"
+    ]
+
+    assert set(event_words) == set(result["found_words"])
+    assert len(event_words) == len(result["found_words"])
+
+
+def test_all_found_words_have_placements():
+    grid = [
+        list("CAT"),
+        list("DOG"),
+        list("RAT"),
+    ]
+    words = ["CAT", "DOG", "RAT"]
+
+    result = solve_dfs(grid, words)
+
+    assert set(result["found_words"]) == set(result["placements"])
+    assert result["missing_words"] == []
+
+
+def test_missing_words_are_still_reported():
+    grid = [
+        list("CAT"),
+        list("DOG"),
+        list("RAT"),
+    ]
+    words = ["CAT", "BIRD"]
+
+    result = solve_dfs(grid, words)
+
+    assert "CAT" in result["found_words"]
+    assert result["missing_words"] == ["BIRD"]

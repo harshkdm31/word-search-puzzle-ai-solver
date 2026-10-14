@@ -93,11 +93,6 @@ def solve_dfs(grid, words):
         )
 
         if index == len(word) - 1:
-            record(
-                "word_found",
-                word=word,
-                path=current_path.copy(),
-            )
             return current_path
 
         result = search_from(
@@ -148,8 +143,23 @@ def solve_dfs(grid, words):
                 if found_path is not None:
                     break
 
+            if found_path is not None:
+                break
+
         if found_path is not None:
             placements[word] = found_path
+
+            # Record discovery only after the placement is retained.
+            record(
+                "word_found",
+                word=word,
+                path=found_path.copy(),
+            )
+
+            # Stop once every target word has been found.
+            if len(placements) == len(targets):
+                break
+
         else:
             record("word_not_found", word=word)
 
