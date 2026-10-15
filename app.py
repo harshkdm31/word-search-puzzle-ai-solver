@@ -23,6 +23,274 @@ st.set_page_config(
     layout="wide",
 )
 
+# Custom Theme CSS & Typography
+st.markdown(
+    """
+    <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap');
+
+    html, body, [class*="css"], .stApp {
+        font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    .stApp {
+        background-color: #0B0F19;
+        background-image: 
+            radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.08) 0px, transparent 50%),
+            radial-gradient(at 100% 0%, rgba(139, 92, 246, 0.06) 0px, transparent 50%),
+            radial-gradient(at 50% 100%, rgba(16, 185, 129, 0.04) 0px, transparent 50%);
+    }
+
+    .hero-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 12px;
+        border-radius: 9999px;
+        background: rgba(99, 102, 241, 0.12);
+        border: 1px solid rgba(129, 140, 248, 0.3);
+        color: #A5B4FC;
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        margin-bottom: 8px;
+        box-shadow: 0 0 12px rgba(99, 102, 241, 0.15);
+    }
+
+    h1 {
+        font-weight: 800 !important;
+        letter-spacing: -0.03em !important;
+        background: linear-gradient(135deg, #FFFFFF 0%, #E0E7FF 60%, #A5B4FC 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        padding-bottom: 0.2rem;
+    }
+
+    h2 {
+        font-weight: 700 !important;
+        letter-spacing: -0.02em !important;
+        color: #F8FAFC !important;
+    }
+
+    h3 {
+        font-weight: 600 !important;
+        letter-spacing: -0.015em !important;
+        color: #E2E8F0 !important;
+    }
+
+    /* Metric Cards */
+    [data-testid="stMetric"] {
+        background: linear-gradient(145deg, #151D2F 0%, #101625 100%) !important;
+        border: 1px solid rgba(79, 70, 229, 0.25) !important;
+        border-radius: 12px !important;
+        padding: 16px 20px !important;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25) !important;
+        transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease !important;
+    }
+
+    [data-testid="stMetric"]:hover {
+        transform: translateY(-2px);
+        border-color: rgba(99, 102, 241, 0.5) !important;
+        box-shadow: 0 8px 20px rgba(99, 102, 241, 0.22) !important;
+    }
+
+    [data-testid="stMetricLabel"] {
+        color: #94A3B8 !important;
+        font-size: 0.75rem !important;
+        font-weight: 700 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.06em !important;
+    }
+
+    [data-testid="stMetricValue"] {
+        color: #F8FAFC !important;
+        font-weight: 800 !important;
+        font-size: 1.85rem !important;
+        font-family: 'JetBrains Mono', monospace !important;
+    }
+
+    /* Primary Buttons */
+    [data-testid="baseButton-primary"] {
+        background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%) !important;
+        border: 1px solid rgba(196, 181, 253, 0.35) !important;
+        color: #FFFFFF !important;
+        font-weight: 600 !important;
+        border-radius: 9px !important;
+        box-shadow: 0 4px 14px rgba(79, 70, 229, 0.45) !important;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    }
+
+    [data-testid="baseButton-primary"]:hover {
+        transform: translateY(-1px) scale(1.01) !important;
+        box-shadow: 0 6px 20px rgba(99, 102, 241, 0.6) !important;
+        filter: brightness(1.1) !important;
+    }
+
+    [data-testid="baseButton-primary"]:active {
+        transform: translateY(0) scale(0.99) !important;
+    }
+
+    /* Secondary Buttons */
+    [data-testid="baseButton-secondary"] {
+        background: #172033 !important;
+        border: 1px solid rgba(148, 163, 184, 0.22) !important;
+        color: #E2E8F0 !important;
+        font-weight: 600 !important;
+        border-radius: 9px !important;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    }
+
+    [data-testid="baseButton-secondary"]:hover {
+        background: #1E293B !important;
+        border-color: #6366F1 !important;
+        color: #FFFFFF !important;
+        transform: translateY(-1px) !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+    }
+
+    /* Expanders */
+    [data-testid="stExpander"] {
+        background: rgba(17, 24, 39, 0.75) !important;
+        border: 1px solid rgba(51, 65, 85, 0.55) !important;
+        border-radius: 12px !important;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2) !important;
+        backdrop-filter: blur(8px) !important;
+        overflow: hidden;
+    }
+
+    /* Sidebar */
+    [data-testid="stSidebar"] {
+        background: linear-gradient(180deg, #0D1322 0%, #080C14 100%) !important;
+        border-right: 1px solid rgba(51, 65, 85, 0.4) !important;
+    }
+
+    /* Progress bar */
+    [data-testid="stProgress"] > div > div > div {
+        background: linear-gradient(90deg, #6366F1 0%, #8B5CF6 50%, #EC4899 100%) !important;
+        border-radius: 9999px !important;
+    }
+
+    /* Legend Bar */
+    .legend-bar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+        margin: 10px 0 16px 0;
+        padding: 9px 14px;
+        background: rgba(17, 24, 39, 0.65);
+        border: 1px solid rgba(51, 65, 85, 0.5);
+        border-radius: 10px;
+    }
+
+    .legend-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 3px 9px;
+        border-radius: 6px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+
+    .legend-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+    }
+
+    .pill-explored { background: rgba(59, 130, 246, 0.15); color: #93C5FD; border: 1px solid rgba(59, 130, 246, 0.35); }
+    .dot-explored { background: #3B82F6; box-shadow: 0 0 6px #3B82F6; }
+
+    .pill-backtracked { background: rgba(239, 68, 68, 0.15); color: #FCA5A5; border: 1px solid rgba(239, 68, 68, 0.35); }
+    .dot-backtracked { background: #EF4444; box-shadow: 0 0 6px #EF4444; }
+
+    .pill-matched { background: rgba(245, 158, 11, 0.15); color: #FDE68A; border: 1px solid rgba(245, 158, 11, 0.35); }
+    .dot-matched { background: #F59E0B; box-shadow: 0 0 6px #F59E0B; }
+
+    .pill-active { background: rgba(139, 92, 246, 0.18); color: #E9D5FF; border: 1px solid rgba(139, 92, 246, 0.45); }
+    .dot-active { background: #8B5CF6; box-shadow: 0 0 8px #8B5CF6; }
+
+    .pill-found { background: rgba(16, 185, 129, 0.18); color: #6EE7B7; border: 1px solid rgba(16, 185, 129, 0.45); }
+    .dot-found { background: #10B981; box-shadow: 0 0 8px #10B981; }
+
+    /* Target Words styling */
+    .target-words-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 7px;
+        margin: 10px 0 16px 0;
+    }
+
+    .target-word-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 12px;
+        border-radius: 8px;
+        font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+        font-size: 0.82rem;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        transition: all 0.15s ease;
+    }
+
+    .target-word-badge.pending {
+        background: #151D2F;
+        border: 1px solid rgba(148, 163, 184, 0.2);
+        color: #CBD5E1;
+    }
+
+    .target-word-badge.found {
+        background: linear-gradient(135deg, rgba(6, 95, 70, 0.4) 0%, rgba(16, 185, 129, 0.3) 100%);
+        border: 1px solid #10B981;
+        color: #6EE7B7;
+        box-shadow: 0 0 10px rgba(16, 185, 129, 0.25);
+    }
+
+    /* Event status card */
+    .event-card {
+        padding: 12px 16px;
+        border-radius: 10px;
+        background: #151D2F;
+        border: 1px solid rgba(99, 102, 241, 0.3);
+        color: #F8FAFC;
+        margin: 8px 0 14px 0;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    }
+
+    /* Dividers */
+    hr {
+        border: none !important;
+        height: 1px !important;
+        background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.35), transparent) !important;
+        margin: 2rem 0 !important;
+    }
+
+    /* Custom scrollbars */
+    ::-webkit-scrollbar {
+        width: 7px;
+        height: 7px;
+    }
+    ::-webkit-scrollbar-track {
+        background: #0B0F19;
+    }
+    ::-webkit-scrollbar-thumb {
+        background: #334155;
+        border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+        background: #475569;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
+st.markdown('<div class="hero-badge">⚡ AI SEARCH LAB & BENCHMARK SUITE</div>', unsafe_allow_html=True)
 st.title("🔎 Word Search Puzzle AI Solver")
 st.write(
     "Generate puzzles, explore AI search algorithms, "
@@ -207,29 +475,66 @@ def render_grid(grid, state=None):
     <style>
     .ws-grid {
         display: grid;
-        gap: 3px;
+        gap: 4px;
         width: fit-content;
         max-width: 100%;
-        margin: 8px auto 16px auto;
+        margin: 10px auto 18px auto;
+        padding: 10px;
+        background: rgba(17, 24, 39, 0.75);
+        border: 1px solid rgba(51, 65, 85, 0.55);
+        border-radius: 12px;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05);
     }
     .ws-cell {
         display: flex;
         align-items: center;
         justify-content: center;
         aspect-ratio: 1 / 1;
-        border: 1px solid #CBD5E1;
-        border-radius: 5px;
+        border: 1px solid rgba(148, 163, 184, 0.22);
+        border-radius: 7px;
         font-weight: 700;
-        font-family: monospace;
-        color: #1E293B;
+        font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+        letter-spacing: 0.5px;
+        color: #f1f5f9;
         box-sizing: border-box;
+        transition: transform 0.12s ease, background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
     }
-    .ws-plain { background: #F8FAFC; }
-    .ws-explored { background: #DBEAFE; border-color: #60A5FA; }
-    .ws-failed { background: #FEE2E2; border-color: #F87171; }
-    .ws-matched { background: #FEF3C7; border-color: #F59E0B; }
-    .ws-current { background: #C4B5FD; border: 2px solid #7C3AED; }
-    .ws-found { background: #BBF7D0; border: 2px solid #16A34A; }
+    .ws-plain {
+        background: #151d2f;
+        border-color: rgba(148, 163, 184, 0.2);
+    }
+    .ws-explored {
+        background: #1e3a5f;
+        border-color: #60a5fa;
+        color: #93c5fd;
+        box-shadow: 0 0 8px rgba(59, 130, 246, 0.35);
+    }
+    .ws-failed {
+        background: #3f1d24;
+        border-color: #f87171;
+        color: #fca5a5;
+        box-shadow: 0 0 8px rgba(239, 68, 68, 0.35);
+    }
+    .ws-matched {
+        background: #3d2e0f;
+        border-color: #fbbf24;
+        color: #fde68a;
+        box-shadow: 0 0 10px rgba(245, 158, 11, 0.4);
+    }
+    .ws-current {
+        background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+        border: 2px solid #c4b5fd;
+        color: #ffffff;
+        box-shadow: 0 0 14px rgba(99, 102, 241, 0.65), inset 0 1px 1px rgba(255, 255, 255, 0.35);
+        font-weight: 800;
+    }
+    .ws-found {
+        background: linear-gradient(135deg, #047857 0%, #10b981 100%);
+        border: 2px solid #6ee7b7;
+        color: #ffffff;
+        box-shadow: 0 0 12px rgba(16, 185, 129, 0.55), inset 0 1px 1px rgba(255, 255, 255, 0.3);
+        font-weight: 800;
+    }
     </style>
     """
 
@@ -606,6 +911,19 @@ with left:
         st.caption("Timer running. Interact with the app to refresh the display.")
 
 
+    st.markdown(
+        """
+        <div class="legend-bar">
+            <span class="legend-pill pill-explored"><span class="legend-dot dot-explored"></span>Explored</span>
+            <span class="legend-pill pill-backtracked"><span class="legend-dot dot-backtracked"></span>Backtracked</span>
+            <span class="legend-pill pill-matched"><span class="legend-dot dot-matched"></span>Matched</span>
+            <span class="legend-pill pill-active"><span class="legend-dot dot-active"></span>Active Path</span>
+            <span class="legend-pill pill-found"><span class="legend-dot dot-found"></span>Found Word</span>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
     st.caption(
         "Legend: 🔵 Explored · 🔴 Backtracked · "
         "🟡 Matched · 🟣 Active path · 🟢 Found word"
@@ -614,8 +932,20 @@ with left:
 with right:
     st.subheader("📚 Target Words")
 
+    found_set = set(st.session_state.manual_found_words)
+    words_badges = []
     for word in target_words:
-        st.write(f"▫️ {word}")
+        is_found = word in found_set
+        badge_cls = "target-word-badge found" if is_found else "target-word-badge pending"
+        icon = "✓" if is_found else "▫"
+        words_badges.append(
+            f'<div class="{badge_cls}"><span>{icon}</span> <span>{html.escape(word)}</span></div>'
+        )
+
+    st.markdown(
+        f'<div class="target-words-grid">{"".join(words_badges)}</div>',
+        unsafe_allow_html=True,
+    )
 
     st.divider()
     st.subheader("🤖 AI Solver")
@@ -755,7 +1085,10 @@ if result is not None:
             st.markdown("**What is happening?**")
 
             if state["last_event"] is not None:
-                st.markdown(describe_event(state["last_event"]))
+                st.markdown(
+                    f'<div class="event-card">{describe_event(state["last_event"])}</div>',
+                    unsafe_allow_html=True,
+                )
             else:
                 st.info("Press Next Step or Play to start the animation.")
 

@@ -4,15 +4,42 @@ import pytest
 import src.benchmark as benchmark
 
 
+
 def fake_solver(grid, words):
     """A predictable solver result for testing the benchmark."""
+    placements = {}
+
+    for word in words:
+        normalized_word = "".join(word.split()).upper()
+
+        # Find the word horizontally in the test grid.
+        for row_index, row in enumerate(grid):
+            letters = "".join(str(cell).upper() for cell in row)
+
+            start = letters.find(normalized_word)
+            if start != -1:
+                placements[normalized_word] = [
+                    (row_index, col)
+                    for col in range(start, start + len(normalized_word))
+                ]
+                break
+
+    found_words = list(placements.keys())
+    normalized_words = [
+        "".join(word.split()).upper() for word in words
+    ]
+    missing_words = [
+        word for word in normalized_words if word not in placements
+    ]
+
     return {
-        "found_words": words[:],
-        "missing_words": [],
+        "found_words": found_words,
+        "missing_words": missing_words,
         "states_explored": 10,
-        "placements": {},
+        "placements": placements,
         "execution_time": 0.001,
     }
+
 
 
 def test_benchmark_runs_all_three_solvers(monkeypatch):
@@ -26,7 +53,7 @@ def test_benchmark_runs_all_three_solvers(monkeypatch):
         },
     )
 
-    grid = [["C", "A"], ["T", "D"]]
+    grid = [["C", "A", "T"], ["D", "O", "G"]]
     words = ["CAT"]
 
     results = benchmark.benchmark_puzzle(
@@ -49,14 +76,14 @@ def test_benchmark_records_expected_metrics(monkeypatch):
     )
 
     results = benchmark.benchmark_puzzle(
-        [["C", "A"], ["T", "D"]],
+        [["C", "A", "T"], ["D", "O", "G"]],
         ["CAT"],
         repeats=2,
     )
 
     result = results[0]
 
-    assert result["grid_size"] == "2x2"
+    assert result["grid_size"] == "2x3"
     assert result["word_list_size"] == 1
     assert result["repeats"] == 2
     assert result["words_found"] == 1
@@ -101,11 +128,11 @@ def test_all_solvers_receive_the_same_puzzle(monkeypatch):
         },
     )
 
-    original_grid = [["C", "A"], ["T", "D"]]
+    original_grid = [["C", "A", "T"], ["D", "O", "G"]]
     original_words = ["CAT"]
 
     benchmark.benchmark_puzzle(
-        original_grid, original_words, repeats=1
+        original_grid, original_words, repeats=1, warmups=0
     )
 
     assert len(received) == 3

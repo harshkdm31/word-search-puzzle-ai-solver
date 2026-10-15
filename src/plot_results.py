@@ -45,6 +45,34 @@ def load_benchmark_results(csv_path=DEFAULT_CSV):
     return data
 
 
+ALGORITHM_STYLES = {
+    "DFS + Backtracking": {
+        "color": "#F43F5E",
+        "marker": "o",
+        "linewidth": 2.2,
+        "markersize": 6,
+    },
+    "Trie Search": {
+        "color": "#38BDF8",
+        "marker": "s",
+        "linewidth": 2.2,
+        "markersize": 6,
+    },
+    "Optimized Trie Search": {
+        "color": "#10B981",
+        "marker": "^",
+        "linewidth": 2.4,
+        "markersize": 7,
+    },
+}
+DEFAULT_STYLE = {
+    "color": "#A855F7",
+    "marker": "D",
+    "linewidth": 2.0,
+    "markersize": 6,
+}
+
+
 def _save_metric_chart(data, metric, ylabel, title, output_path):
     """Plot one metric against grid size, with a line per algorithm."""
     grouped = (
@@ -63,9 +91,11 @@ def _save_metric_chart(data, metric, ylabel, title, output_path):
         len(word_counts),
         figsize=(6 * len(word_counts), 4.5),
         squeeze=False,
+        facecolor="#111827",
     )
 
     for ax, word_count in zip(axes[0], word_counts):
+        ax.set_facecolor("#0B0F19")
         subset = grouped[grouped["requested_word_count"] == word_count]
 
         for algorithm in algorithms:
@@ -74,22 +104,54 @@ def _save_metric_chart(data, metric, ylabel, title, output_path):
             )
 
             if not line_data.empty:
+                style = ALGORITHM_STYLES.get(algorithm, DEFAULT_STYLE)
                 ax.plot(
                     line_data["experiment_grid_size"],
                     line_data[metric],
-                    marker="o",
+                    marker=style["marker"],
+                    markersize=style["markersize"],
+                    linewidth=style["linewidth"],
+                    color=style["color"],
                     label=algorithm,
                 )
 
-        ax.set_title(f"{word_count} target words")
-        ax.set_xlabel("Grid size (N × N)")
-        ax.set_ylabel(ylabel)
-        ax.grid(True, alpha=0.3)
-        ax.legend(fontsize="small")
+        ax.set_title(
+            f"{word_count} target words",
+            color="#F8FAFC",
+            fontsize=12,
+            fontweight="bold",
+            pad=10,
+        )
+        ax.set_xlabel("Grid size (N × N)", color="#94A3B8", fontsize=10, labelpad=6)
+        ax.set_ylabel(ylabel, color="#94A3B8", fontsize=10, labelpad=6)
+        ax.tick_params(colors="#94A3B8", labelsize=9)
+        for spine in ax.spines.values():
+            spine.set_color("#334155")
+            spine.set_linewidth(1.0)
+        ax.grid(True, linestyle="--", alpha=0.35, color="#334155")
+        legend = ax.legend(
+            fontsize="small",
+            facecolor="#1E293B",
+            edgecolor="#334155",
+            labelcolor="#F8FAFC",
+            framealpha=0.9,
+        )
 
-    fig.suptitle(title)
-    fig.tight_layout()
-    fig.savefig(output_path, dpi=160, bbox_inches="tight")
+    fig.suptitle(
+        title,
+        color="#F8FAFC",
+        fontsize=14,
+        fontweight="bold",
+        y=0.98,
+    )
+    fig.tight_layout(rect=[0, 0, 1, 0.95])
+    fig.savefig(
+        output_path,
+        dpi=180,
+        bbox_inches="tight",
+        facecolor=fig.get_facecolor(),
+        edgecolor="none",
+    )
     plt.close(fig)
 
 
