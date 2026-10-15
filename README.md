@@ -8,6 +8,12 @@ Generate puzzles, solve them manually or with AI, visualize the search
 process through recorded traces, and compare algorithm performance using
 execution time, search effort, and word-finding results.
 
+## 🚀 Live Demo
+
+**[Launch Word Search Puzzle AI Solver](https://word-search-puzzle-ai-solvergit-2wukhbxiam2gwdmbxn5hpg.streamlit.app/)**
+
+Try the interactive puzzle, explore the three AI search algorithms, watch animated search traces, and compare solver performance in the Benchmark Lab.
+
 **Repository:**
 [harshkdm31/word-search-puzzle-ai-solver](https://github.com/harshkdm31/word-search-puzzle-ai-solver)
 
