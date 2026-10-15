@@ -104,7 +104,6 @@ trace-recording overhead can affect measured performance.
     custom component
 
 ## 5. Project Structure
-## 5. Project Structure
 
 ```text
 word-search-puzzle-ai-solver/
@@ -299,7 +298,7 @@ words](docs/screenshots/interactive-puzzle.png)
 
 This is an educational AI mini-project intended to demonstrate search
 algorithms and empirical comparison. It runs locally and does not
-require a backend server, database, or user authentication system.
+require a backend server, database, or user authentication system or be accessed through the hosted Streamlit demo.
 
 Benchmark results are specific to the tested configurations and
 execution environment. Timing measurements can vary between runs,
