@@ -12,6 +12,10 @@ from src.evaluation import evaluate_solvers, get_evaluation_summary
 from src.animation import TracePlayer
 from streamlit_autorefresh import st_autorefresh
 from components.interactive_grid import interactive_grid
+from src.benchmark import run_benchmark
+from src.export_results import export_results_to_csv
+from src.plot_results import generate_comparison_charts
+from pathlib import Path
 
 st.set_page_config(
     page_title="Word Search Puzzle AI Solver",
@@ -24,6 +28,148 @@ st.write(
     "Generate puzzles, explore AI search algorithms, "
     "and compare their performance."
 )
+
+
+# -------------------- BENCHMARK LAB --------------------
+
+st.divider()
+st.header("📊 Benchmark Lab")
+st.write(
+    "Compare DFS + Backtracking, Trie Search, and "
+    "Optimized Trie Search on identical puzzles."
+)
+
+with st.expander("Configure and run benchmarks", expanded=True):
+    selected_grid_sizes = st.multiselect(
+        "Grid sizes",
+        options=[10, 15, 20],
+        default=[10, 15, 20],
+        key="benchmark_grid_sizes",
+    )
+
+    selected_word_counts = st.multiselect(
+        "Target word counts",
+        options=[5, 10, 15],
+        default=[5, 10, 15],
+        key="benchmark_word_counts",
+    )
+
+    benchmark_repeats = st.slider(
+        "Repetitions per solver",
+        min_value=1,
+        max_value=10,
+        value=5,
+        key="benchmark_repeats",
+    )
+
+    run_benchmark_button = st.button(
+        "🚀 Run Benchmark Experiments",
+        type="primary",
+        key="run_benchmark_experiments",
+    )
+
+    if run_benchmark_button:
+        if not selected_grid_sizes or not selected_word_counts:
+            st.warning(
+                "Select at least one grid size and word count."
+            )
+        else:
+            try:
+                with st.spinner(
+                    "Running experiments for all three solvers..."
+                ):
+                    results = run_benchmark(
+                        grid_sizes=tuple(selected_grid_sizes),
+                        word_counts=tuple(selected_word_counts),
+                        repeats=benchmark_repeats,
+                    )
+
+                    csv_path = export_results_to_csv(
+                        results,
+                        "benchmark_results.csv",
+                    )
+
+                    chart_paths = generate_comparison_charts(
+                        csv_path=csv_path,
+                        output_dir="reports/benchmark_charts",
+                    )
+
+                st.session_state.benchmark_lab_results = results
+                st.session_state.benchmark_lab_csv = str(csv_path)
+                st.session_state.benchmark_lab_charts = [
+                    str(path) for path in chart_paths
+                ]
+
+                st.success("Benchmark completed successfully!")
+
+            except (ValueError, RuntimeError, OSError) as error:
+                st.error(f"Benchmark failed: {error}")
+
+# Display the latest saved benchmark results.
+if st.session_state.get("benchmark_lab_results"):
+    results = st.session_state.benchmark_lab_results
+    results_df = pd.DataFrame(results)
+
+    st.subheader("📈 Benchmark Results")
+
+    metric1, metric2, metric3 = st.columns(3)
+
+    metric1.metric("Experiments", len(results))
+    metric2.metric(
+        "Algorithms",
+        results_df["algorithm"].nunique(),
+    )
+    metric3.metric(
+        "All-words-found results",
+        int(results_df["all_words_found"].sum()),
+        f"out of {len(results_df)} runs",
+    )
+
+    display_columns = [
+        "algorithm",
+        "grid_size",
+        "word_list_size",
+        "repeats",
+        "words_found",
+        "total_words",
+        "states_explored",
+        "mean_time_ms",
+        "median_time_ms",
+        "all_words_found",
+    ]
+
+    st.dataframe(
+        results_df[display_columns],
+        use_container_width=True,
+        hide_index=True,
+    )
+
+    st.subheader("📊 Comparison Charts")
+
+    chart_paths = st.session_state.get(
+        "benchmark_lab_charts", []
+    )
+
+    for chart_path in chart_paths:
+        if Path(chart_path).exists():
+            st.image(chart_path, use_container_width=True)
+
+    csv_path = st.session_state.get("benchmark_lab_csv")
+
+    if csv_path and Path(csv_path).exists():
+        with open(csv_path, "rb") as csv_file:
+            st.download_button(
+                label="⬇️ Download Benchmark CSV",
+                data=csv_file.read(),
+                file_name="benchmark_results.csv",
+                mime="text/csv",
+                key="download_benchmark_csv",
+            )
+
+st.divider()
+
+# -------------------- END BENCHMARK LAB --------------------
+
 
 SOLVERS = {
     "DFS + Backtracking": solve_dfs,
