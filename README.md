@@ -1,63 +1,112 @@
 # Word Search Puzzle AI Solver
 
-An interactive AI-based word search puzzle application built with Python and Streamlit. The project demonstrates and compares three search strategies: **DFS with Backtracking, Trie Search, and Optimized Trie Search**.
+An interactive AI-based word-search application built with Python and
+Streamlit. It implements and compares three search strategies: **DFS
+with Backtracking, Trie Search, and Optimized Trie Search**.
 
-Users can generate word search puzzles, solve them manually or with AI, visualize the search process, and compare algorithm performance using execution time and search effort metrics.
+Generate puzzles, solve them manually or with AI, visualize the search
+process through recorded traces, and compare algorithm performance using
+execution time, search effort, and word-finding results.
+
+**Repository:**
+[harshkdm31/word-search-puzzle-ai-solver](https://github.com/harshkdm31/word-search-puzzle-ai-solver)
+
+## Contents
+
+-   [Project Objectives](#1-project-objectives)
+-   [Features](#2-features)
+-   [Algorithms](#3-algorithms)
+-   [Technology Stack](#4-technology-stack)
+-   [Project Structure](#5-project-structure)
+-   [Installation and Setup](#6-installation-and-setup)
+-   [Using the Application](#7-using-the-application)
+-   [Benchmarking and Evaluation](#8-benchmarking-and-evaluation)
+-   [Running Tests](#9-running-tests)
+-   [Screenshots](#10-screenshots)
+-   [Design Scope and Limitations](#11-design-scope-and-limitations)
+-   [Conclusion](#12-conclusion)
 
 ## 1. Project Objectives
 
-- Implement and compare three AI search algorithms for word search puzzles.
-- Demonstrate Depth-First Search (DFS), backtracking, and Trie-based prefix matching.
-- Visualize the search process through animated traces.
-- Provide an interactive interface for manually solving puzzles.
-- Evaluate algorithms using execution time, states explored, and words found.
-- Generate benchmark reports, CSV files, and comparison charts.
+-   Implement and compare three search algorithms for word-search
+    puzzles.
+-   Demonstrate Depth-First Search (DFS), backtracking, and Trie-based
+    prefix matching.
+-   Visualize algorithm behavior through animated search traces.
+-   Provide an interactive interface for manually solving puzzles.
+-   Evaluate solvers using execution time, states explored, and words
+    found.
+-   Generate benchmark data, CSV exports, and comparison charts.
 
 ## 2. Features
 
-- **Puzzle generation:** Generate word search grids with configurable sizes and target word lists.
-- **Multiple algorithms:** Choose between DFS with Backtracking, Trie Search, and Optimized Trie Search.
-- **Eight-direction search:** Find words horizontally, vertically, and diagonally, in both forward and reverse directions.
-- **Interactive gameplay:** Select words by dragging across grid cells, including diagonal selections.
-- **Progress tracking:** View the target word list, highlight discovered words, and track completion time.
-- **AI visualization:** Play, pause, step through, and reset the animated search trace.
-- **Performance evaluation:** Compare execution time, states explored, and word-finding results.
-- **Benchmark Lab:** Run repeated experiments on identical puzzles for all three algorithms.
-- **Data export:** Export benchmark results to CSV and generate comparison charts.
+-   **Puzzle generation:** Generate word-search grids with configurable
+    dimensions and target word lists.
+-   **Three search strategies:** DFS with Backtracking, Trie Search, and
+    Optimized Trie Search.
+-   **Eight-direction search:** Search horizontally, vertically, and
+    diagonally, including reverse directions.
+-   **Interactive gameplay:** Select words by dragging across grid
+    cells, including diagonal selections.
+-   **Progress tracking:** View target words, persistent highlights for
+    found words, and challenge timing.
+-   **Search visualization:** Step through recorded search events using
+    playback controls.
+-   **Solver metrics:** Review words found, states explored, and
+    execution time.
+-   **Benchmark Lab:** Run repeated experiments comparing the three
+    solvers on the same generated puzzle for each configuration.
+-   **Data export and charts:** Export benchmark results to CSV and
+    generate comparison charts.
 
 ## 3. Algorithms
 
 ### 3.1 DFS with Backtracking
 
-Depth-First Search explores possible paths through the letter grid. For each target word, the algorithm explores candidate starting positions and follows valid neighboring cells in a straight line. Backtracking allows the search to abandon unsuccessful paths and continue exploring alternatives.
+Depth-First Search (DFS) explores candidate paths through the letter
+grid. The solver examines possible starting positions and searches in
+the supported straight-line directions. Backtracking lets the search
+abandon unsuccessful candidates and continue exploring alternatives.
 
 ### 3.2 Trie Search
 
-A Trie is a tree-based data structure that stores words through shared prefixes. Instead of treating every target word independently, the solver uses the Trie to identify valid prefixes while exploring the grid. Paths that cannot match a Trie prefix can be abandoned early.
+A Trie is a tree-based data structure that stores words through shared
+prefixes. Instead of searching for each target word independently, the
+solver uses Trie prefixes to guide exploration. When a path no longer
+matches a valid prefix, that path can be abandoned early.
 
 ### 3.3 Optimized Trie Search
 
-The optimized version improves Trie-guided search by reducing unnecessary exploration using techniques such as indexing possible starting positions by their letters and pruning completed Trie branches, as implemented in the project.
+The optimized Trie solver builds on Trie-guided exploration with
+additional pruning. The implementation includes techniques such as
+indexing possible starting positions by their letters and pruning
+completed Trie branches.
 
-The three algorithms are evaluated using the same puzzle configurations to make their results more comparable.
+Optimization does not guarantee that this solver will be fastest for
+every input. Setup costs, puzzle size, word-list characteristics, and
+trace-recording overhead can affect measured performance.
 
 ## 4. Technology Stack
 
-- **Programming language:** Python
-- **User interface:** Streamlit
-- **Data analysis:** Pandas
-- **Visualization:** Matplotlib
-- **Testing:** Pytest
-- **Version control:** Git and GitHub
+-   **Language:** Python
+-   **User interface:** Streamlit
+-   **Data analysis:** Pandas
+-   **Charts:** Matplotlib
+-   **Testing:** Pytest
+-   **Version control:** Git and GitHub
+-   **Interactive grid:** HTML, CSS, and JavaScript through a Streamlit
+    custom component
 
 ## 5. Project Structure
 
-```text
+``` text
 word-search-puzzle-ai-solver/
 ├── app.py
 ├── requirements.txt
 ├── README.md
 ├── .gitignore
+├── .streamlit/
+│   └── config.toml
 ├── src/
 │   ├── puzzle_generator.py
 │   ├── trie.py
@@ -81,100 +130,196 @@ word-search-puzzle-ai-solver/
 │   └── sample_puzzles.json
 ├── docs/
 │   └── screenshots/
+├── reports/
+│   └── benchmark_charts/
 └── components/
     └── interactive_grid/
         ├── __init__.py
         └── index.html
 ```
 
+*The tree shows the main project files; generated caches and the local
+virtual environment are intentionally omitted.*
+
 ## 6. Installation and Setup
 
 ### Prerequisites
 
-- Python installed
-- pip package manager
-- Git (optional, for version control)
+-   Python installed
+-   pip package manager
+-   Git (optional, for cloning the repository)
 
 ### Step 1: Clone the repository
 
-```bash
+``` bash
 git clone https://github.com/harshkdm31/word-search-puzzle-ai-solver.git
 cd word-search-puzzle-ai-solver
 ```
 
 ### Step 2: Create a virtual environment
 
-```bash
+``` bash
 python -m venv .venv
 ```
 
-Activate it on Windows PowerShell:
+Activate it in Windows PowerShell:
 
-```powershell
+``` powershell
 .\.venv\Scripts\Activate.ps1
+```
+
+On macOS or Linux:
+
+``` bash
+source .venv/bin/activate
 ```
 
 ### Step 3: Install dependencies
 
-```bash
+``` bash
+python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
 ```
 
 ### Step 4: Launch the application
 
-```bash
-streamlit run app.py
+``` bash
+python -m streamlit run app.py
 ```
 
-Streamlit will provide a local URL in the terminal. Open that URL in your browser to use the application.
+Open the local URL printed in the terminal by Streamlit.
 
-## 7. Benchmarking and Evaluation
+## 7. Using the Application
 
-The Benchmark Lab compares all three solvers on the same generated puzzle for each experiment configuration. Each solver is executed repeatedly to reduce the influence of individual timing variations.
+1.  Choose a grid size and enter target words or select an available
+    preset.
+2.  Generate the puzzle.
+3.  Try finding words manually by selecting a straight line of grid
+    cells.
+4.  Choose a solver and run the AI search to inspect its results.
+5.  Use the search playback controls to explore the recorded search
+    trace.
+6.  Open the Benchmark Lab, configure grid sizes, target word counts,
+    and repetitions, then run experiments.
+7.  Review the results and charts, and export benchmark data when
+    needed.
+
+Exact controls and available options may depend on the current
+application version.
+
+## 8. Benchmarking and Evaluation
+
+The Benchmark Lab compares all three solvers on the same generated
+puzzle for each experiment configuration. Each solver is run repeatedly,
+with warm-up runs supported by the benchmark implementation, to help
+reduce the influence of one-off timing variation.
 
 ### Evaluation metrics
 
-| Metric | Description |
-|---|---|
-| Execution time | Time taken by the solver to complete its search |
-| States explored | Number of search states explored, according to the solver's implementation |
-| Words found | Number of target words successfully identified |
-| Total words | Number of target words supplied to the solver |
-| Completion rate | Percentage of target words found |
-| Grid size | Dimensions of the puzzle grid |
-| Word-list size | Number of target words in the experiment |
+  -----------------------------------------------------------------------
+  Metric                              Description
+  ----------------------------------- -----------------------------------
+  Execution time                      Time measured for a solver run
+
+  States explored                     Search-state count reported by the
+                                      solver implementation
+
+  Words found                         Number of target words successfully
+                                      identified
+
+  Total words                         Number of target words supplied to
+                                      the experiment
+
+  Completion rate                     Percentage of target words found
+
+  Grid size                           Dimensions of the puzzle grid
+
+  Word-list size                      Number of target words in the
+                                      experiment
+  -----------------------------------------------------------------------
 
 ### Generated outputs
 
-The benchmark workflow generates:
+-   `benchmark_results.csv` --- tabular benchmark data.
+-   `reports/benchmark_charts/runtime_comparison.png` --- runtime
+    comparison chart.
+-   `reports/benchmark_charts/states_explored_comparison.png` ---
+    search-effort comparison chart.
+-   `reports/benchmark_charts/word_completion_comparison.png` ---
+    word-completion comparison chart.
 
-- `benchmark_results.csv` — tabular benchmark data.
-- `reports/benchmark_charts/runtime_comparison.png` — execution-time comparison.
-- `reports/benchmark_charts/states_explored_comparison.png` — search-effort comparison.
-- `reports/benchmark_charts/word_completion_comparison.png` — word-finding completion comparison.
+### Interpreting results
 
-These outputs can be used to examine the trade-offs between the three search strategies.
+Benchmark outcomes depend on the puzzle configuration, target words,
+implementation details, and execution environment. An optimized
+algorithm is not necessarily fastest on every small workload. Interpret
+execution time alongside states explored and word-completion results,
+and compare results from equivalent configurations.
 
-## 8. Running Tests
+## 9. Running Tests
 
 Run the complete test suite from the project root:
 
-```bash
+``` bash
 python -m pytest -v
 ```
 
-The tests cover the Trie, solvers, puzzle generation, animation, benchmarking, CSV export, and chart generation.
+The tests cover the Trie, solvers, puzzle generation, animation,
+benchmarking, CSV export, and chart generation.
 
-## 9. Design Scope and Limitations
+## 10. Screenshots
 
-This project is designed as an educational AI mini-project. It runs locally and does not require a backend server, database, or user authentication system.
+Add screenshots of the running application to `docs/screenshots/`, then
+use the following Markdown references. These images should be captured
+from the actual application.
 
-The benchmark results depend on the tested puzzle configurations, implementation details, and execution environment. Runtime differences should therefore be interpreted alongside the number of states explored and the number of words found.
+### Main interface
 
-The application demonstrates algorithmic search and empirical comparison; it is not intended to be a comprehensive benchmarking framework.
+![Main application interface](docs/screenshots/main-interface.png)
 
-## 10. Conclusion
+### Interactive puzzle
 
-The Word Search Puzzle AI Solver combines an interactive puzzle game with practical implementations of DFS, backtracking, and Trie-based search. Animated traces help explain how the algorithms explore the grid, while benchmark tables and charts provide a way to compare their performance.
+![Interactive puzzle grid and target
+words](docs/screenshots/interactive-puzzle.png)
 
-The project demonstrates the application of fundamental AI search techniques, data structures, visualization, and experimental evaluation in a single interactive application.
+### Animated solver playback
+
+![Animated search playback](docs/screenshots/solver-playback.png)
+
+### Solver results
+
+![Solver metrics and results](docs/screenshots/solver-results.png)
+
+### Benchmark Lab and comparison charts
+
+![Benchmark results and charts](docs/screenshots/benchmark-charts.png)
+
+> If a screenshot has not yet been added, remove its image reference
+> temporarily or add the corresponding image before publishing the
+> README.
+
+## 11. Design Scope and Limitations
+
+This is an educational AI mini-project intended to demonstrate search
+algorithms and empirical comparison. It runs locally and does not
+require a backend server, database, or user authentication system.
+
+Benchmark results are specific to the tested configurations and
+execution environment. Timing measurements can vary between runs,
+particularly for small workloads. The number of states explored is
+defined by the implementation and should be interpreted consistently
+across the solvers.
+
+The project is not intended to be a comprehensive benchmarking
+framework.
+
+## 12. Conclusion
+
+The Word Search Puzzle AI Solver combines an interactive word-search
+game with implementations of DFS, backtracking, and Trie-based search.
+Recorded search traces help illustrate how the algorithms explore the
+grid, while benchmark tables and charts support empirical comparison.
+
+The project brings together fundamental AI search techniques, data
+structures, interactive visualization, automated testing, and
+experimental evaluation in one application.
