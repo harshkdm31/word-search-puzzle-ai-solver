@@ -99,7 +99,6 @@ trace-recording overhead can affect measured performance.
 
 ## 5. Project Structure
 
-``` text
 word-search-puzzle-ai-solver/
 ├── app.py
 ├── requirements.txt
@@ -137,9 +136,6 @@ word-search-puzzle-ai-solver/
         ├── __init__.py
         └── index.html
 ```
-
-*The tree shows the main project files; generated caches and the local
-virtual environment are intentionally omitted.*
 
 ## 6. Installation and Setup
 
@@ -269,10 +265,6 @@ benchmarking, CSV export, and chart generation.
 
 ## 10. Screenshots
 
-Add screenshots of the running application to `docs/screenshots/`, then
-use the following Markdown references. These images should be captured
-from the actual application.
-
 ### Main interface
 
 ![Main application interface](docs/screenshots/main-interface.png)
@@ -294,9 +286,6 @@ words](docs/screenshots/interactive-puzzle.png)
 
 ![Benchmark results and charts](docs/screenshots/benchmark-charts.png)
 
-> If a screenshot has not yet been added, remove its image reference
-> temporarily or add the corresponding image before publishing the
-> README.
 
 ## 11. Design Scope and Limitations
 
