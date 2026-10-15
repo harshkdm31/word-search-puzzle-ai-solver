@@ -58,8 +58,7 @@
         letter-spacing: 0.5px;
         cursor: crosshair;
         box-sizing: border-box;
-        transition: transform 0.12s cubic-bezier(0.4, 0, 0.2, 1),
-                    background 0.15s ease,
+        transition: background 0.15s ease,
                     border-color 0.15s ease,
                     box-shadow 0.15s ease;
         position: relative;
@@ -68,8 +67,6 @@
     .cell:hover {
         background: var(--cell-hover-bg);
         border-color: var(--cell-hover-border);
-        transform: scale(1.04);
-        z-index: 1;
     }
 
     .cell.selected {
@@ -77,8 +74,6 @@
         border-color: var(--selected-border);
         color: #ffffff;
         box-shadow: var(--selected-shadow);
-        transform: scale(1.05);
-        z-index: 2;
     }
 
     .cell.found {
