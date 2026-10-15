@@ -98,7 +98,9 @@ trace-recording overhead can affect measured performance.
     custom component
 
 ## 5. Project Structure
+## 5. Project Structure
 
+```text
 word-search-puzzle-ai-solver/
 ├── app.py
 ├── requirements.txt
